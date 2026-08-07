@@ -147,9 +147,38 @@ Los datos de ejemplo se cargan automáticamente en H2 al iniciar (`data.sql`).
 ./mvnw test
 ```
 
-Los tests son de **integración del endpoint REST** (`@SpringBootTest` +
-`@AutoConfigureMockMvc` + `MockMvc`) e incluyen los cinco casos del enunciado
-más un caso de error 404.
+La estrategia combina **tests unitarios** e **integración**:
+
+- **Unitarios** (sin Spring): caso de uso (`DefaultGetApplicablePriceUseCase`
+  con el puerto de salida mockeado), mapper de persistencia
+  (`PriceEntityMapper`) y DTO del adaptador REST (`PriceResponse.from`).
+- **Integración**: adaptador JPA con `@DataJpaTest` sobre H2, y el endpoint
+  REST con `@SpringBootTest` + `@AutoConfigureMockMvc` + `MockMvc`, cubriendo
+  los cinco casos del enunciado más escenarios de error (400 y 404).
+
+---
+
+## Cobertura de código (JaCoCo)
+
+La cobertura se mide con **JaCoCo**, integrado en el ciclo de build. El informe
+se genera al ejecutar:
+
+```bash
+./mvnw verify
+```
+
+Informe HTML:
+
+```
+target/site/jacoco/index.html
+```
+
+El build aplica un **quality gate**: `mvn verify` falla si la cobertura baja de
+los umbrales definidos (**80% de instrucciones** y **70% de ramas**). Se
+excluyen del cómputo la clase principal `PricesMicroApplication` y las clases de
+wiring de `infrastructure/config` (`ApplicationConfig`, `OpenApiConfig`), sin
+valor funcional testeable; los casos de uso, adaptadores, mappers, DTOs y
+repositorios sí se miden.
 
 ---
 
