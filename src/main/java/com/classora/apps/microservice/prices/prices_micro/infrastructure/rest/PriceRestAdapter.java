@@ -1,7 +1,6 @@
 package com.classora.apps.microservice.prices.prices_micro.infrastructure.rest;
 
 import com.classora.apps.microservice.prices.prices_micro.application.usecase.GetApplicablePriceUseCase;
-import com.classora.apps.microservice.prices.prices_micro.domain.model.Price;
 import com.classora.apps.microservice.prices.prices_micro.infrastructure.exception.ApiError;
 import com.classora.apps.microservice.prices.prices_micro.infrastructure.rest.dto.PriceResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,8 +52,9 @@ public class PriceRestAdapter {
             @Parameter(description = "Brand identifier (1 = ZARA)", example = "1", required = true)
             @RequestParam Long brandId) {
 
-        Price price = getApplicablePriceUseCase.getApplicablePrice(applicationDate, productId, brandId);
-        return PriceResponse.from(price);
+        return PriceResponse.from(
+                getApplicablePriceUseCase.getApplicablePrice(applicationDate, productId, brandId)
+        );
     }
 }
 

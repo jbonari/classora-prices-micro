@@ -1,0 +1,68 @@
+package com.classora.apps.microservice.prices.prices_micro.infrastructure.persistence.repository;
+
+import com.classora.apps.microservice.prices.prices_micro.domain.model.Price;
+import com.classora.apps.microservice.prices.prices_micro.domain.ports.PriceRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.context.annotation.Import;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest
+@Import(JpaPriceRepository.class)
+class JpaPriceRepositoryTest {
+
+    private static final Long BRAND_ID = 1L;
+    private static final Long PRODUCT_ID = 35455L;
+
+    @Autowired
+    private PriceRepository priceRepository;
+
+    @Test
+    @DisplayName("Returns the highest-priority rate when several rates overlap")
+    void returnsHighestPriorityRateWhenSeveralOverlap() {
+        LocalDateTime applicationDate = LocalDateTime.parse("2020-06-14T16:00:00");
+
+        Optional<Price> result = priceRepository.findApplicablePrice(applicationDate, PRODUCT_ID, BRAND_ID);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().priceList()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("Returns empty when no rate applies for the given instant")
+    void returnsEmptyWhenNoRateApplies() {
+        LocalDateTime applicationDate = LocalDateTime.parse("2019-01-01T00:00:00");
+
+        Optional<Price> result = priceRepository.findApplicablePrice(applicationDate, PRODUCT_ID, BRAND_ID);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @DisplayName("startDate is inclusive: a query at the exact start returns the rate")
+    void includesRateWhenApplicationDateEqualsStartDate() {
+        LocalDateTime startBoundary = LocalDateTime.parse("2020-06-14T15:00:00");
+
+        Optional<Price> result = priceRepository.findApplicablePrice(startBoundary, PRODUCT_ID, BRAND_ID);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().priceList()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("endDate is inclusive: a query at the exact end returns the rate")
+    void includesRateWhenApplicationDateEqualsEndDate() {
+        LocalDateTime endBoundary = LocalDateTime.parse("2020-06-14T18:30:00");
+
+        Optional<Price> result = priceRepository.findApplicablePrice(endBoundary, PRODUCT_ID, BRAND_ID);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().priceList()).isEqualTo(2);
+    }
+}

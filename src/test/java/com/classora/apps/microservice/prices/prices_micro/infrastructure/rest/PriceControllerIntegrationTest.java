@@ -63,6 +63,38 @@ class PriceControllerIntegrationTest {
                 .andExpect(jsonPath("$.status").value(404));
     }
 
+    @Test
+    @DisplayName("Error case: malformed applicationDate -> HTTP 400")
+    void requestWithMalformedDateReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/prices")
+                        .param("applicationDate", "2020/06/14")
+                        .param("productId", String.valueOf(PRODUCT_ID))
+                        .param("brandId", String.valueOf(BRAND_ID)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+    }
+
+    @Test
+    @DisplayName("Error case: missing productId -> HTTP 400")
+    void requestWithoutProductIdReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/prices")
+                        .param("applicationDate", "2020-06-14T10:00:00")
+                        .param("brandId", String.valueOf(BRAND_ID)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+    }
+
+    @Test
+    @DisplayName("Error case: unknown product -> HTTP 404")
+    void requestWithUnknownProductReturnsNotFound() throws Exception {
+        mockMvc.perform(get("/prices")
+                        .param("applicationDate", "2020-06-14T10:00:00")
+                        .param("productId", "99999")
+                        .param("brandId", String.valueOf(BRAND_ID)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404));
+    }
+
     private void assertPrice(String applicationDate, int expectedPriceList, double expectedPrice) throws Exception {
         mockMvc.perform(get("/prices")
                         .param("applicationDate", applicationDate)
