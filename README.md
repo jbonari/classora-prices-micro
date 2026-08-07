@@ -129,6 +129,19 @@ aplicación permanece desacoplado a propósito:
 
 ---
 
+## Requisitos previos
+
+- **JDK 21** (Temurin u otra distribución equivalente).
+- **Docker** (opcional, solo para construir y ejecutar la imagen del contenedor).
+
+No es necesario instalar Maven: el proyecto incluye el **Maven Wrapper**.
+
+> **Nota Windows:** los comandos de este README usan `./mvnw` (shell tipo Unix).
+> En Windows (PowerShell / CMD) utiliza el equivalente `mvnw.cmd`, por ejemplo
+> `mvnw.cmd verify`.
+
+---
+
 ## Cómo ejecutar la aplicación
 
 ```bash
@@ -179,6 +192,9 @@ excluyen del cómputo la clase principal `PricesMicroApplication` y las clases d
 wiring de `infrastructure/config` (`ApplicationConfig`, `OpenApiConfig`), sin
 valor funcional testeable; los casos de uso, adaptadores, mappers, DTOs y
 repositorios sí se miden.
+
+Actualmente el proyecto alcanza un **100% de cobertura de instrucciones** sobre
+las clases medidas, holgadamente por encima del umbral.
 
 ---
 
