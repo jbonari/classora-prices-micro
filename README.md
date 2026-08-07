@@ -7,6 +7,11 @@ Dada una marca, un producto y un instante, el servicio devuelve la tarifa
 aplicable. Cuando varias tarifas se solapan en el tiempo, se aplica la de
 **mayor prioridad**.
 
+> Esta rama es una **segunda iteración** del proyecto, elaborada a partir del
+> feedback técnico recibido: refuerza la estrategia de testing (unit +
+> integración), añade medición de cobertura con **JaCoCo** y quality gate, e
+> incorpora **Docker** y una pipeline de **CI (GitHub Actions)**.
+
 ---
 
 ## Objetivo
