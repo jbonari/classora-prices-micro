@@ -182,6 +182,43 @@ repositorios sí se miden.
 
 ---
 
+## Docker
+
+El proyecto incluye un `Dockerfile` **multistage**: una etapa de build compila y
+empaqueta el JAR con el Maven Wrapper sobre Temurin JDK 21, y una etapa de
+runtime ligera basada en Temurin JRE 21 ejecuta únicamente el JAR.
+
+Construir la imagen:
+
+```bash
+docker build -t classora-prices-micro .
+```
+
+Ejecutar el contenedor:
+
+```bash
+docker run -p 8080:8080 classora-prices-micro
+```
+
+La aplicación queda disponible en `http://localhost:8080` (Swagger UI en
+`http://localhost:8080/swagger-ui.html`).
+
+---
+
+## Integración continua (GitHub Actions)
+
+La pipeline [`.github/workflows/ci.yml`](.github/workflows/ci.yml) se ejecuta en
+cada `push` y `pull_request`, y:
+
+- configura Java 21 (Temurin) con caché de dependencias Maven,
+- ejecuta `./mvnw verify`, que engloba los **tests unitarios y de integración**,
+  la generación del informe **JaCoCo** y su **quality gate** (el build falla si
+  la cobertura baja de los umbrales),
+- publica el informe de cobertura como **artifact** (`jacoco-report`),
+- y construye la **imagen Docker** para validar que el empaquetado funciona.
+
+---
+
 ## API
 
 ### Endpoint
